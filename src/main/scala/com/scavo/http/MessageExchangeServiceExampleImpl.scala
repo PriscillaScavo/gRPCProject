@@ -14,15 +14,7 @@ import com.scavo.http.{MessageExchangeServiceExample, MessageExchangeServiceExam
 
 class MessageExchangeServiceExampleImpl(implicit val mat: Materializer, actorSystem: ActorSystem)
   extends MessageExchangeServiceExample{
-  implicit val executionContext: ExecutionContextExecutor =
-    actorSystem.dispatcher
-
-  val service: HttpRequest => Future[HttpResponse] =
-    MessageExchangeServiceExampleHandler(new MessageExchangeServiceExampleImpl())
-
-  def startServer: Future[Http.ServerBinding] =
-    Http().newServerAt("127.0.0.1", 8090).bind(service)
-
+  implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
   private def getTimestamp: Timestamp = {
     val time = Instant.now()
     Timestamp.of(time.getEpochSecond, time.getNano)

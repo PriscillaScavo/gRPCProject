@@ -4,7 +4,7 @@ import "google/protobuf/timestamp.proto";
 
 option java_package = "com.scavo.http";
 
-package akka2grpcexample;
+package akka2grpc;
 
 message MessageRequestExample {
   string id = 1;

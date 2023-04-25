@@ -23,7 +23,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % "10.4.0",
   "com.typesafe.akka" %% "akka-http-spray-json" % "10.4.0",
   "com.lightbend.akka" %% "akka-stream-alpakka-sse" % "5.0.0",
-  "com.typesafe.akka" %% "akka-persistence-typed" % AkkaVersion
+  "com.typesafe.akka" %% "akka-persistence-typed" % AkkaVersion,
+  "ch.qos.logback" % "logback-classic" % "1.2.3"
 ) ++ scalaTestDeps
 
 val monocleVersion = "2.1.0"
