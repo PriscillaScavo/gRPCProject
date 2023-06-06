@@ -1,7 +1,3 @@
-import akka.NotUsed
-import akka.actor.ActorSystem
-import akka.stream.Materializer
-import akka.stream.scaladsl.{Sink, Source}
 import com.google.protobuf.timestamp.Timestamp
 import com.scavo.http.example.{MessageRequestExample, MessageResponseExample, ZioExample}
 import io.grpc.Status
