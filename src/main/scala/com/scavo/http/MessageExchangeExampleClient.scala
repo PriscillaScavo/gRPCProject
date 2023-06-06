@@ -1,22 +1,14 @@
-import akka.NotUsed
-import akka.actor.ActorSystem
-import akka.grpc.GrpcClientSettings
-import akka.stream.scaladsl.Source
-import com.scavo.http.{MessageExchangeServiceExample, MessageExchangeServiceExampleClient, MessageRequestExample, MessageResponseExample}
-
+import com.scavo.http.example.ZioExample.MessageExchangeServiceExampleClient
+import com.scavo.http.example.{MessageRequestExample, MessageResponseExample}
+import io.grpc.Status
+import zio.stream.ZStream
+import zio.{Has, ZIO}
 import java.util.UUID
-import scala.concurrent.{ExecutionContextExecutor, Future}
 
-class MessageExchangeExampleClient(implicit actorSystem: ActorSystem){
-  implicit val executionContext: ExecutionContextExecutor =
-    actorSystem.dispatcher
+class MessageExchangeExampleClient{
+  private val client = MessageExchangeServiceExampleClient
 
-  private val clientSettings: GrpcClientSettings =
-    GrpcClientSettings.fromConfig(MessageExchangeServiceExample.name)
-
-  private val client = MessageExchangeServiceExampleClient(clientSettings)
-
-  def sendSingleMessage(message: String): Future[MessageResponseExample] =
+  def sendSingleMessage(message: String): ZIO[Has[MessageExchangeServiceExampleClient.ZService[Any, Any]] with Any, Status, MessageResponseExample] =
     client.sendMessage(
       MessageRequestExample(
         id = UUID.randomUUID().toString,
@@ -26,7 +18,7 @@ class MessageExchangeExampleClient(implicit actorSystem: ActorSystem){
       )
     )
 
-  def sendSingleMessageStreamResponse(message: String): Source[MessageResponseExample, NotUsed] =
+  def sendSingleMessageStreamResponse(message: String): ZStream[Has[MessageExchangeServiceExampleClient.ZService[Any, Any]] with Any, Status, MessageResponseExample] =
     client.sendMessageStreamResponse(
       MessageRequestExample(
         id = UUID.randomUUID().toString,
@@ -37,8 +29,8 @@ class MessageExchangeExampleClient(implicit actorSystem: ActorSystem){
     )
 
   def streamMessagesSingleResponse(
-                                    messages: Source[String, NotUsed]
-                                  ): Future[MessageResponseExample] =
+                                    messages: ZStream[Any, Status, String]
+                                  ): ZIO[Has[MessageExchangeServiceExampleClient.ZService[Any, Any]] with Any, Status, MessageResponseExample] =
     client.streamMessagesSingleResponse(
       messages.map(m =>
         MessageRequestExample(
@@ -51,8 +43,8 @@ class MessageExchangeExampleClient(implicit actorSystem: ActorSystem){
     )
 
   def streamMessages(
-                      messages: Source[String, NotUsed]
-                    ): Source[MessageResponseExample, NotUsed] =
+                      messages: ZStream[Any, Status, String]
+                    ): ZStream[Has[MessageExchangeServiceExampleClient.ZService[Any, Any]] with Any, Status, MessageResponseExample] =
     client.streamMessages(
       messages.map(m =>
         MessageRequestExample(

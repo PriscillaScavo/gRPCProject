@@ -1,17 +1,11 @@
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
-import com.scavo.http.MessageExchangeServiceExampleHandler
+import scalapb.zio_grpc.{ServerMain, ServiceList}
+import zio.ZIO
 
-import scala.concurrent.{ExecutionContextExecutor, Future}
+object MessageExchangeServer extends ServerMain {
+  override def port: Int = 8980
 
-class MessageExchangeServer()(implicit actorSystem: ActorSystem) {
-  implicit val executionContext: ExecutionContextExecutor =
-    actorSystem.dispatcher
+  val createMessageExchangeService = ZIO.succeed(new MessageExchangeServiceExampleImpl())
 
-  val service: HttpRequest => Future[HttpResponse] =
-    MessageExchangeServiceExampleHandler(new MessageExchangeServiceExampleImpl())
-
-  def startServer: Future[Http.ServerBinding] =
-    Http().newServerAt("127.0.0.1", 8090).bind(service)
+  def services: ServiceList[zio.ZEnv] =
+    ServiceList.addM(createMessageExchangeService)
 }
